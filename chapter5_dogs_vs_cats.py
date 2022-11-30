@@ -1,8 +1,16 @@
 import os
 import shutil
+import tensorflow as tf
 from keras import layers, models, optimizers
 from keras.preprocessing.image import ImageDataGenerator
+from keras import mixed_precision
 import matplotlib.pyplot as plt
+
+#os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
+#tf.config.set_visible_devices([], 'GPU')
+
+mixed_precision.set_global_policy('mixed_float16')
+#os.environ['TF_ENABLE_AUTO_MIXED_PRECISION'] = '1'
 
 
 original_dataset_dir = 'cats_vs_dogs/train'
@@ -39,37 +47,37 @@ fnames = ['cat.{}.jpg'.format(i) for i in range(1000)]
 for fname in fnames:
     src = os.path.join(original_dataset_dir, fname)
     dst = os.path.join(train_cats_dir, fname)
-    #shutil.copyfile(src, dst)
+    shutil.copyfile(src, dst)
 
 fnames = ['cat.{}.jpg'.format(i) for i in range(1000, 1500)]
 for fname in fnames:
     src = os.path.join(original_dataset_dir, fname)
     dst = os.path.join(validation_cats_dir, fname)
-    #shutil.copyfile(src, dst)
+    shutil.copyfile(src, dst)
 
 fnames = ['cat.{}.jpg'.format(i) for i in range(1500, 2000)]
 for fname in fnames:
     src = os.path.join(original_dataset_dir, fname)
     dst = os.path.join(test_cats_dir, fname)
-    #shutil.copyfile(src, dst)
+    shutil.copyfile(src, dst)
 
 fnames = ['dog.{}.jpg'.format(i) for i in range(1000)]
 for fname in fnames:
     src = os.path.join(original_dataset_dir, fname)
     dst = os.path.join(train_dogs_dir, fname)
-    #shutil.copyfile(src, dst)
+    shutil.copyfile(src, dst)
 
 fnames = ['dog.{}.jpg'.format(i) for i in range(1000, 1500)]
 for fname in fnames:
     src = os.path.join(original_dataset_dir, fname)
     dst = os.path.join(validation_dogs_dir, fname)
-    #shutil.copyfile(src, dst)
+    shutil.copyfile(src, dst)
 
 fnames = ['dog.{}.jpg'.format(i) for i in range(1500, 2000)]
 for fname in fnames:
     src = os.path.join(original_dataset_dir, fname)
     dst = os.path.join(test_dogs_dir, fname)
-    #shutil.copyfile(src, dst)
+    shutil.copyfile(src, dst)
 
 
 model = models.Sequential()
@@ -117,7 +125,7 @@ history = model.fit(
     validation_data=validation_generator,
     validation_steps=50)
 
-#model.save('cats_and_dogs_small_1.h5')
+model.save('cats_and_dogs_small_1.h5')
 
 acc = history.history['acc']
 val_acc = history.history['val_acc']
