@@ -1,12 +1,14 @@
 import os
+import sys
+
 import tensorflow as tf
 import shutil
 import numpy as np
-from keras import layers, models, optimizers
-from keras.applications import VGG16
-from keras.preprocessing.image import ImageDataGenerator
-from keras.models import load_model
-from keras import backend as K
+from tensorflow.keras import layers, models, optimizers
+from tensorflow.keras.applications import VGG16
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from tensorflow.keras.models import load_model
+from tensorflow.keras import backend as K
 import matplotlib.pyplot as plt
 
 #print(tf.config.list_physical_devices('GPU'))
@@ -517,6 +519,7 @@ def deprocess_image(x):
 
 
 def generate_pattern(layer_name, filter_index, size=150):
+    model.summary()
     layer_output = model.get_layer(layer_name).output
     loss = K.mean(layer_output[:, :, :, filter_index])
 
@@ -535,8 +538,9 @@ def generate_pattern(layer_name, filter_index, size=150):
     return deprocess_image(img)
 
 
+sys.setrecursionlimit(10000)
 tf.compat.v1.disable_eager_execution()
-plt.imshow(generate_pattern('block3_conv1', 0))
+#plt.imshow(generate_pattern('block3_conv1', 0))
 
 layer_name = 'block1_conv1'
 size = 64
@@ -556,4 +560,6 @@ for i in range(8):
                 vertical_start: vertical_end, :] = filter_img
 
 plt.figure(figsize=(20, 20))
-plt.imshow(results)
+#plt.imshow(results)
+
+model = VGG16(weights='imagenet')
