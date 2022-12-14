@@ -1,6 +1,7 @@
 import numpy as np
 import string
 from keras.preprocessing.text import Tokenizer
+from keras.layers import Embedding
 
 samples = ['The cat sat on the mat.', 'The dog ate my homework.']
 
@@ -55,3 +56,6 @@ for i, sample in enumerate(samples):
         index = abs(hash(word)) % dimensionality
         results[i, j, index] = 1.
 print(results)
+
+# Embedding
+embedding_layer = Embedding(1000, 64)
