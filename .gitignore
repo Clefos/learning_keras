@@ -3,4 +3,7 @@
 __pycache__/
 cats_and_dogs_small/
 cats_vs_dogs/
+glove.6B/
+jena_climate/
+aclImdb/
 *.iml
