@@ -134,8 +134,11 @@ plt.show()
 '''
 
 model = Sequential()
-model.add(layers.Bidirectional(
-    layers.GRU(32, input_shape=(None, float_data.shape[-1]))))
+model.add(layers.Conv1D(32, 5, activation='relu',
+                        input_shape=(None, float_data.shape[-1])))
+model.add(layers.MaxPooling1D(3))
+model.add(layers.Conv1D(32, 5, activation='relu'))
+model.add(layers.GRU(32, dropout=0.1, recurrent_dropout=0.5))
 model.add(layers.Dense(1))
 
 model.compile(optimizer=RMSprop(), loss='mae')
