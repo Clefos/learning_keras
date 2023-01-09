@@ -1,6 +1,7 @@
 .idea/
 **/*.h5
 __pycache__/
+my_log_dir/
 cats_and_dogs_small/
 cats_vs_dogs/
 glove.6B/
