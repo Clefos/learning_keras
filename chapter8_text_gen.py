@@ -3,6 +3,12 @@ import sys
 import keras
 from keras import layers
 import numpy as np
+import os
+
+
+#os.environ['TF_ENABLE_AUTO_MIXED_PRECISION'] = '1'
+os.environ['TF_FORCE_GPU_ALLOW_GROWTH'] = 'true'
+#keras.backend.set_floatx('float16')
 
 path = keras.utils.get_file('nietzsche.txt',
                             origin='https://s3.amazonaws.com/text-datasets/nietzsche.txt')
@@ -24,8 +30,8 @@ print('Unique characters:', len(chars))
 char_indices = dict((char, chars.index(char)) for char in chars)
 
 print('Vectorization...')
-x = np.zeros((len(sentences), maxlen, len(chars)), dtype=np.bool)
-y = np.zeros((len(sentences), len(chars)), dtype=np.bool)
+x = np.zeros((len(sentences), maxlen, len(chars)), dtype=bool)
+y = np.zeros((len(sentences), len(chars)), dtype=bool)
 for i, sentence in enumerate(sentences):
     for t, char in enumerate(sentence):
         x[i, t, char_indices[char]] = 1
@@ -35,7 +41,7 @@ model = keras.models.Sequential()
 model.add(layers.LSTM(128, input_shape=(maxlen, len(chars))))
 model.add(layers.Dense(len(chars), activation='softmax'))
 
-optimizer = keras.optimizers.RMSprop(lr=0.01)
+optimizer = keras.optimizers.RMSprop(learning_rate=0.01)
 model.compile(loss='categorical_crossentropy', optimizer=optimizer)
 
 
@@ -49,7 +55,7 @@ def sample(preds, temperature=1.0):
 
 
 for epoch in range(1, 60):
-    print('epoch', epoch)
+    print('\nepoch', epoch)
     model.fit(x, y, batch_size=128, epochs=1)
     start_index = random.randint(0, len(text) - maxlen - 1)
     generated_text = text[start_index: start_index + maxlen]
