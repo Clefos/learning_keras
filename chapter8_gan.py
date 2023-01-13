@@ -1,3 +1,5 @@
+import tensorflow as tf
+from keras_preprocessing import image
 import os
 import keras
 from keras import layers
@@ -66,4 +68,41 @@ gan_optimizer = keras.optimizers.RMSprop(lr=0.0004, clipvalue=1.0, decay=1e-8)
 gan.compile(optimizer=gan_optimizer, loss='binary_crossentropy')
 gan.summary()
 
-(x_train, y_train), (_, _) = keras.datasets.cifar10.load_data()
+(x_train, y_train), (_, _) = tf.keras.datasets.cifar10.load_data()
+
+x_train = x_train[y_train.flatten() == 6]
+x_train = x_train.reshape(
+    (x_train.shape[0],) +
+    (height, width, channels)).astype('float32') / 255
+
+iterations = 10000
+batch_size = 20
+save_dir = 'save_dir'
+
+start = 0
+for step in range(iterations):
+    random_latent_vectors = np.random.normal(size=(batch_size, latent_dim))
+    generated_images = generator.predict(random_latent_vectors)
+    stop = start + batch_size
+    real_images = x_train[start: stop]
+    combined_images = np.concatenate([generated_images, real_images])
+    labels = np.concatenate([np.ones((batch_size, 1)),
+                             np.zeros((batch_size, 1))])
+    labels += 0.05 * np.random.normal(size=(batch_size, latent_dim))
+    d_loss = discriminator.train_on_batch(combined_images, labels)
+    random_latent_vectors = np.random.normal(size=(batch_size, latent_dim))
+    misleading_targets = np.zeros((batch_size, 1))
+    a_loss = gan.train_on_batch(random_latent_vectors, misleading_targets)
+
+    start += batch_size
+    if start > len(x_train) - batch_size:
+        start = 0
+    if step % 100 == 0:
+        gan.save_weights('gan.h5')
+        print('discriminator loss:', d_loss)
+        print('adversarial loss:', a_loss)
+        img = image.array_to_img(generated_images[0] * 255., scale=False)
+        img.save(os.path.join(save_dir, 'generated_frog' + str(step) + '.png'))
+        img = image.array_to_img(real_images[0] * 255., scale=False)
+        img.save(os.path.join(save_dir, 'real_frog' + str(step) + '.png'))
+
