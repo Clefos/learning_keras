@@ -15,4 +15,5 @@ ENV TF_ENABLE_AUTO_MIXED_PRECISION=1
 #ENV CUDA_VISIBLE_DEVICES=-1
 
 # Same as in base image rocm/tensorflow
-CMD ["/bin/bash", "-c", "env > /etc/profile.d/horovod.sh"]
+#CMD ["/bin/bash", "-c", "env > /etc/profile.d/horovod.sh"]
+CMD ["/bin/bash"]
